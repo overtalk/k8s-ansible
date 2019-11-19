@@ -1,0 +1,29 @@
+# 'etcd' cluster should have odd member(s) (1,3,5,...)
+# variable 'ETCD_NAME' is the distinct name of a member in 'etcd' cluster
+[etcd]
+192.168.189.148 ETCD_NAME=etcd1
+192.168.189.147 ETCD_NAME=etcd2
+192.168.189.149 ETCD_NAME=etcd3
+
+# master node(s)
+[kube-master]
+192.168.189.148 NODE_NAME=master1
+
+# work node(s)
+[kube-node]
+192.168.189.147 NODE_NAME=node1
+192.168.189.149 NODE_NAME=node2
+
+
+[all:vars]
+ansible_ssh_user=root
+
+# --------- Main Variables ---------------
+# Deploy Directory (kubeasz workspace)
+base_dir="~/k8s-build"
+
+etcd_version="3.3.12"
+
+flannel_version="0.11.0"
+
+k8s_server_version="1.15.5"

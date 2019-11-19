@@ -1,0 +1,28 @@
+- name: 创建 etcd 工作目录
+  file:
+    path: "{{ base_dir }}/{{ item }}"
+    state: directory
+  with_items:
+    - "etcd"
+    - "etcd/ssl"
+    - "etcd/systemd"
+    - "etcd/bin"
+
+- name: 拷贝 etcd 证书，bin 文件
+  copy:
+    src: '{{ item.src }}'
+    dest: '{{ base_dir }}/etcd/{{ item.dest }}'
+  with_items:
+    - { src: 'ssl/', dest: 'ssl/' }
+    - { src: 'bin/', dest: 'bin/' }
+    - { src: 'install.sh', dest: 'install.sh' }
+    - { src: 'uninstall.sh', dest: 'uninstall.sh' }
+
+- name: 生成 etcd service 文件
+  template: src=etcd.service.j2 dest={{ base_dir }}/etcd/systemd/etcd.service
+
+- name: 卸载 etcd service
+  shell: cd {{ base_dir }}/etcd && sh {{ base_dir }}/etcd/uninstall.sh 
+
+- name: 安装 etcd service
+  shell: cd {{ base_dir }}/etcd && sh {{ base_dir }}/etcd/install.sh {{ etcd_version }}

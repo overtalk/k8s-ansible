@@ -1,0 +1,29 @@
+[Unit]
+Description=Etcd Server
+After=network.target
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=notify
+ExecStart=/usr/local/bin/etcd \
+    --name={{ ETCD_NAME }}\
+    --data-dir=/etc/etcd/data \
+    --listen-peer-urls=https://{{ inventory_hostname }}:2380 \
+    --listen-client-urls=https://{{ inventory_hostname }}:2379,http://127.0.0.1:2379 \
+    --advertise-client-urls=https://{{ inventory_hostname }}:2379 \
+    --initial-advertise-peer-urls=https://{{ inventory_hostname }}:2380 \
+    --initial-cluster={{ ETCD_NODES }} \
+    --initial-cluster-token=etcd-cluster \
+    --initial-cluster-state=new \
+    --cert-file=/etc/etcd/ssl/server.pem \
+    --key-file=/etc/etcd/ssl/server-key.pem \
+    --peer-cert-file=/etc/etcd/ssl/server.pem \
+    --peer-key-file=/etc/etcd/ssl/server-key.pem \
+    --trusted-ca-file=/etc/etcd/ssl/ca.pem \
+    --peer-trusted-ca-file=/etc/etcd/ssl/ca.pem
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
